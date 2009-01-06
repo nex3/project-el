@@ -36,20 +36,22 @@
 (eval-when-compile (require 'cl))
 
 (defvar project-root-functions
-  '(project-vc-toplevel-dir-p project-vc-dir-p)
+  '(project-toplevel-file-p project-everylevel-file-p)
   "A list of functions that take the name of a directory and return t
 if that directory is the root of a project and nil otherwise.
 
 Each function is run on a single directory node before a higher node
 is tried.")
 
-(defvar project-vc-toplevel-dirs '(".git" ".hg" ".bzr" "_darcs")
-  "A list of directories that might appear at the top-level of
-version-controlled projects.")
+(defvar project-toplevel-files
+  '(".emacs-project" ".dir-settings.el" ".emacs-dirvars" ".git" ".hg"
+    ".bzr" "_darcs")
+  "A list of files or directories that signal the top level
+of a project.")
 
-(defvar project-vc-dirs '(".svn" "CVS" "RCS")
-  "A list of directories that might appear at every of level of
-version-controlled projects.")
+(defvar project-everylevel-files '(".svn" "CVS" "RCS")
+  "A list of files or directories that appear at every level
+of a project.")
 
 (defun* project-root (&optional buffer)
   "Return the root of the project for BUFFER, determined using
@@ -62,18 +64,18 @@ No argument means use the current buffer."
     (dolist (fn project-root-functions)
       (when (funcall fn dir) (return-from project-root dir)))))
 
-(defun project-vc-toplevel-dir-p (dir)
+(defun project-toplevel-file-p (dir)
   "Return t if dir contains a toplevel vc dir as defined
 by `project-vc-toplevel-dirs', and nil otherwise."
-  (dolist (vc-dir project-vc-toplevel-dirs)
-    (when (file-directory-p (concat dir "/" vc-dir)) (return t))))
+  (dolist (file project-toplevel-files)
+    (when (file-exists-p (concat dir "/" file)) (return t))))
 
-(defun project-vc-dir-p (dir)
+(defun project-everylevel-file-p (dir)
   "Return t if dir is the toplevel vc dir as defined
 by `project-vc-dirs', and nil otherwise."
-  (dolist (vc-dir project-vc-dirs)
-    (when (and (file-directory-p (concat dir "/" vc-dir))
-               (not (file-directory-p
+  (dolist (file project-everylevel-files)
+    (when (and (file-exists-p (concat dir "/" vc-dir))
+               (not (file-exists-p
                      (concat
                       (directory-file-name
                        (file-name-directory dir))
