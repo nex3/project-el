@@ -65,21 +65,21 @@ No argument means use the current buffer."
       (when (funcall fn dir) (return-from project-root dir)))))
 
 (defun project-toplevel-file-p (dir)
-  "Return t if dir contains a toplevel vc dir as defined
-by `project-vc-toplevel-dirs', and nil otherwise."
+  "Return t if dir contains a toplevel file as defined
+by `project-toplevel-files', and nil otherwise."
   (dolist (file project-toplevel-files)
     (when (file-exists-p (concat dir "/" file)) (return t))))
 
 (defun project-everylevel-file-p (dir)
-  "Return t if dir is the toplevel vc dir as defined
-by `project-vc-dirs', and nil otherwise."
+  "Return t if dir is the toplevel dir as defined
+by `project-everylevel-files', and nil otherwise."
   (dolist (file project-everylevel-files)
-    (when (and (file-exists-p (concat dir "/" vc-dir))
+    (when (and (file-exists-p (concat dir "/" file))
                (not (file-exists-p
                      (concat
                       (directory-file-name
                        (file-name-directory dir))
-                      "/" vc-dir))))
+                      "/" file))))
       (return t))))
 
 (provide 'project)
